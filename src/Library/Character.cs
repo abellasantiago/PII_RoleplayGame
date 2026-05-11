@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Ucu.Poo.RolePlayGame
 {
-    public class Character
+    public class Character: ICharacter
     {
         public string Name {get; }
         public int AttackValue {get; } 
@@ -13,13 +13,10 @@ namespace Ucu.Poo.RolePlayGame
         public List<IItem> Equipment { get; private set; }
 
 
-        public Character(string name, int attackvalue, int defensevalue, int initialhealth, int health)
+        public Character(string name)
         {
             this.Name = name;
-            this.AttackValue = attackvalue;
-            this.DefenseValue = defensevalue;
-            this.InitialHealth = initialhealth;
-            this.Health = this.InitialHealth;
+            this.Equipment = new List<IItem>();
         }
 
         public void ReceiveAttack(ICharacter attacker)

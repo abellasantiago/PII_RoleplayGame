@@ -4,8 +4,8 @@ namespace Ucu.Poo.RolePlayGame
     {
         public int VictoryPoints { get; }
 
-        protected Enemies(string name, int health, int attack, int defense, int speed, int victoryPoints)
-            : base(name, health, attack, defense, speed)
+        protected Enemies(string name, int attackValue, int defenseValue, int initialHealth, int victoryPoints)
+            : base(name, attackValue, defenseValue, initialHealth)
         {
             VictoryPoints = victoryPoints;
         }

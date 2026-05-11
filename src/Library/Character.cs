@@ -13,9 +13,13 @@ namespace Ucu.Poo.RolePlayGame
         public List<IItem> Equipment { get; private set; }
 
 
-        public Character(string name)
+        protected Character(string name, int attackValue, int defenseValue, int initialHealth)
         {
             this.Name = name;
+            this.AttackValue = attackValue;
+            this.DefenseValue = defenseValue;
+            this.InitialHealth = initialHealth;
+            this.Health = initialHealth;
             this.Equipment = new List<IItem>();
         }
 

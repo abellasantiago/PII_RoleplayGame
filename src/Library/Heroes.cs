@@ -4,8 +4,8 @@ namespace Ucu.Poo.RolePlayGame
     {
         public int AccumulatedVictoryPoints { get; private set; }
 
-        protected Heroes(string name, int health, int attack, int defense, int speed)
-            : base(name, health, attack, defense, speed)
+        protected Heroes(string name, int attackValue, int defenseValue, int initialHealth)
+            : base(name, attackValue, defenseValue, initialHealth)
         {
             AccumulatedVictoryPoints = 0;
         }

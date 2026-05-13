@@ -37,7 +37,7 @@ namespace Ucu.Poo.RolePlayGame
             this.Health = this.InitialHealth;
         }
 
-        public int GetTotalAttack()
+        public virtual int GetTotalAttack()
         {
             int total = this.AttackValue;
             foreach (IItem item in this.Equipment)
@@ -51,7 +51,7 @@ namespace Ucu.Poo.RolePlayGame
             return total;
         }
 
-        public int GetTotalDefense()
+        public virtual int GetTotalDefense()
         {
             int total = this.DefenseValue;
             foreach (IItem item in this.Equipment)

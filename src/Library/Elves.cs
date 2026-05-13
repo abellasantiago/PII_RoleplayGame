@@ -13,7 +13,7 @@ namespace Ucu.Poo.RolePlayGame
             this.SpellsBook = new SpellsBook("Elves Book");
         }
 
-        public int GetTotalAttack()
+        public override int GetTotalAttack()
         {
             int total = this.AttackValue;
             foreach (IItem item in this.Equipment)
@@ -28,7 +28,7 @@ namespace Ucu.Poo.RolePlayGame
             return total;
         }
 
-        public int GetTotalDefense()
+        public override int GetTotalDefense()
         {
             int total = this.DefenseValue;
             foreach (IItem item in this.Equipment)

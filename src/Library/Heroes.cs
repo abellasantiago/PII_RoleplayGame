@@ -10,9 +10,9 @@ namespace Ucu.Poo.RolePlayGame
             this.AccumulatedVictoryPoints = 0;
         }
 
-        public void AddVictoryPoints(IEnemies enemies)
+        public void AddVictoryPoints(IEnemies enemy)
         {
-            this.AccumulatedVictoryPoints += enemies.VictoryPoints;
+            this.AccumulatedVictoryPoints += enemy.VictoryPoints;
         }
     }
 }

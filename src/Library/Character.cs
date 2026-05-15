@@ -64,5 +64,15 @@ namespace Ucu.Poo.RolePlayGame
             }
             return total;
         }
+
+        public void AddItem(IItem item)
+        {
+            this.Equipment.Add(item);
+        }
+
+        public void RemoveItem(IItem item)
+        {
+            this.Equipment.Remove(item);
+        }
     }
 }

@@ -5,6 +5,7 @@
 //--------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 
 namespace Ucu.Poo.RolePlayGame
 {
@@ -18,34 +19,34 @@ namespace Ucu.Poo.RolePlayGame
         /// </summary>
         public static void Main(string[] args)
         {
-            ICharacter ogro = new Giant("Ogro");
+            // Se crean primero los heroes
+            Console.WriteLine("Bienvenido al juego!");
+            Console.WriteLine("Creacion de heroes");
+
+            Giant ogro = new Giant("Ogro");
             Console.WriteLine("Gigante: " + ogro.Name);
 
             Wizard mago = new Wizard("Mago de fuego");
             Console.WriteLine("Mago: " + mago.Name);
-            Console.WriteLine("Daño de ataque del " + mago.Name + " es " + mago.GetTotalAttack());
-
             Spell fireball = new Spell("Bola de fuego", 50, 0);
             mago.SpellsBook.AddSpell(fireball);
-            Console.WriteLine("Ataque total de " + mago.Name + " es " + mago.GetTotalAttack()); 
 
-            ogro.ReceiveAttack(mago);
-            Console.WriteLine("Salud del " + ogro.Name + " luego del ataque es " + ogro.Health);
+            // Se crean los enemigos
+            Console.WriteLine("Creacion de enemigos");
+            Goblin goblin = new Goblin("Duende malvado");
+            Console.WriteLine("Goblin: " + goblin.Name);
+            Zombie zombie = new Zombie("Zombie");
+            Console.WriteLine("Zombie: " + zombie.Name);
 
-            mago.ReceiveAttack(ogro);
-            Console.WriteLine("Salud del " + mago.Name + " después del ataque es " + mago.Health);
+            Console.WriteLine("Simulacion de un encuentro");
+            // Se simula un encuentro
+            Encounter encounter = new Encounter();
+            // Se agrupan enemigos y heroes en listas para pasarlos al encuentro
+            List<Enemies> enemies = new List<Enemies> { goblin, zombie};
+            List<Heroes> heroes = new List<Heroes> { ogro, mago};
 
-            ogro.Cure();
-            Console.WriteLine("Salud del " + ogro.Name + " luego de curarse es " + ogro.Health);
-
-            Elves elfo = new Elves("Elfo del bosque");
-            Spell arrow = new Spell("Flecha mágica", 30, 0);
-            elfo.SpellsBook.AddSpell(arrow);
-            Console.WriteLine("Elfo: " + elfo.Name);
-            
-            ogro.ReceiveAttack(elfo);
-            ogro.ReceiveAttack(mago);
-            Console.WriteLine("Salud del " + ogro.Name + " luego de recibir varios ataques es " + ogro.Health);
+            // Se inicia
+            encounter.DoEncounter(enemies, heroes);
         }
     }
 }

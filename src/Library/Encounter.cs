@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Ucu.Poo.RolePlayGame
 {
+    // Representa un combate entre un grupo de héroes y un grupo de enemigos.
     public class Encounter
     {
         public void DoEncounter(List<Enemies> enemies, List<Heroes> heroes)

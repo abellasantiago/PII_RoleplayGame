@@ -1,5 +1,4 @@
-<img alt="UCU" src="https://www.ucu.edu.uy/plantillas/images/logo_ucu.svg"
-width="150"/>
+<img alt="UCU" src="https://www.ucu.edu.uy/plantillas/images/logo_ucu.svg" width="150"/>
 
 # Universidad Católica del Uruguay
 
@@ -7,120 +6,94 @@ width="150"/>
 
 ### Programación II
 
-# Encuentros de herederos en la Tierra Media
+---
 
-Los encuentros heredados en la Tierra Media no tienen nada que ver con
-personajes ancestrales que han pasado a mejor vida, sino con las similitudes que
-se pueden encontrar entre los componentes del juego.
+# Encuentros en la Tierra Media — Entrega Final
 
-En el ejercicio anterior han encontrado algunas abstracciones útiles, pero como
-habrán visto, mucha de la lógica del juego se encuentra repetida en distintos
-objetos.
+## Descripción del proyecto
 
-Si sólo existieran herramientas para reutilizar código...
+Este trabajo es la continuación del juego de rol que venimos desarrollando durante el curso. La idea central es simular encuentros de combate entre héroes y enemigos, donde cada personaje tiene atributos, items de ataque y defensa, y comportamientos propios.
 
-# Desafío
+A lo largo del trabajo fuimos construyendo el sistema de a poco: primero modelamos los personajes, después los items, luego los enemigos, y finalmente el sistema de encuentros. Cada entrega se apoyó en la anterior, lo que nos obligó a pensar bien el diseño desde el principio para no tener que reescribir todo cada vez.
 
-## Parte 1: Refactoring
+---
 
-Refactorizen<sup>1</sup> el código de la [parte
-2](https://github.com/ucudal/PII_RoleplayGame_2_Start) para aplicar técnicas de
-reutilización de código que conozcan.
+## Estructura del proyecto
 
-## Parte 2: Comprobar que sigue funcionando
+El proyecto está organizado en varias clases que representan los distintos elementos del juego:
 
-Como bien saben, el proceso de refactoring cambia la estructura del código sin
-cambiar su comportamiento. Para demostrar esto, agreguen los casos de test de la
-parte 2 —o escribanlos si no llegaron a escribirlos o recibieron feedback para
-mejorarlos— y comprueben que todo siga funcionando igual que antes —los tests
-dan verde—.
+### Personajes
 
-## Parte 3: Los malos (_The Bad Guys_)
+- **`Character`** — clase base abstracta de la que heredan todos los personajes. Tiene los atributos comunes: nombre, salud, ataque, defensa, y el equipamiento. También implementa la lógica de `ReceiveAttack`, `Cure`, `GetTotalAttack` y `GetTotalDefense`, calculando el total sumando los valores del personaje más los de sus items.
 
-Crearemos un nuevo tipo de personajes: los Enemigos o _Enemies_.
+- **`Heroes`** — extiende `Character` y representa a los personajes buenos. Agrega los puntos de victoria acumulados (`AccumulatedVictoryPoints`) y el método `AddVictoryPoints`.
 
-Los **enemigos** son personajes —_characters_— que representan a "los malos".
-Los enemigos, al igual que los personajes que ya conocíamos, también tienen
-items para atacar y defender.
+- **`Enemies`** — también extiende `Character` y representa a los enemigos. A diferencia de los héroes, los enemigos no acumulan VP sino que *tienen* un valor fijo de VP que entregan al héroe que los derrota.
 
-También le daremos una distinción a los personajes que ya conocíamos. A partir
-de ahora nos referiremos a ellos como los Héroes —o _Heroes_—.
+### Héroes implementados
 
-Una diferencia entre los héroes y los enemigos es que los héroes **acumulan**
-puntos de victoria —VP—, mientras que los enemigos **tienen** un valor de puntos
-de victoria —VP—. Cuando un héroe mata a un enemigo, el héroe gana los VP del
-enemigo que mató.
+| Clase | Ataque base | Defensa base | Salud | Equipamiento |
+|---|---|---|---|---|
+| `Knight` | 150 | 100 | 300 | Sword, Shield, Armor |
+| `Wizard` | 50 | 80 | 150 | Staff, SpellsBook |
+| `Archer` | 90 | 30 | 100 | Bow, Armor |
+| `Dwarves` | 70 | 50 | 400 | Axe, Helmet, Shield |
+| `Elves` | 50 | 20 | 300 | SpellsBook |
+| `Giant` | 100 | 0 | 500 | — |
 
-Cada integrante del equipo deberá agregar al menos un enemigo.
+### Enemigos implementados
 
-## Parte 4: Preparando el campo de batalla
+| Clase | Ataque | Defensa | Salud | VP |
+|---|---|---|---|---|
+| `Goblin` | 30 | 10 | 50 | 10 |
+| `Zombie` | 20 | 5 | 80 | 15 |
+| `Skeleton` | 25 | 15 | 40 | 12 |
+| `Devil` | 60 | 40 | 150 | 50 |
 
-Incorporaremos otro nuevo concepto a nuestro juego de encuentros en la Tierra
-Media: los Encuentros —o _Encounters_—.
+### Items
 
-Los **encuentros** son instancias donde **dos o más** personajes se encuentran
-para batallar (encuentros de combate). En el futuro incorporaremos otros tipos
-de encuentro.
+Los items se dividen según su función:
 
-En un encuentro debe haber siempre personajes _Heroe_ y personajes _Enemigo_ —al
-menos uno de cada uno—.
+- **Ofensivos** (`IOffensiveItem`): suman ataque. Incluye `Sword`, `Axe`, `Bow`, `Staff`.
+- **Defensivos** (`IDefensiveItem`): suman defensa. Incluye `Shield`, `Armor`, `Helmet`.
+- **Mixtos**: el `SpellsBook` implementa ambas interfaces. Su ataque y defensa dependen de los hechizos (`Spell`) que tenga cargados. Cada `Spell` tiene un valor de ataque y uno de defensa.
 
-Todo encuentro deben exponer un método `void DoEncounter()` para ejecutarlo.
-Cuando el encuentro se ejecuta, los héroes batallarán contra los enemigos, de la
-siguiente forma:
+### El encuentro (`Encounter`)
 
-- Los enemigos atacan primero. Cada enemigo ataca únicamente a un héroe. Si hay
-  un sólo héroe, todos los enemigos atacan al mismo. Si hay más de un enemigo y
-  más de un héroe, el primer enemigo ataca al primer héroe, el segundo enemigo
-  ataca al segundo héroe, y así sucesivamente. Si hay menos héroes (N) que
-  enemigos (M), el siguiente enemigo (N+1) ataca al primero héroe, el siguiente
-  enemigo (N+2) ataca al segundo héroe, y así sucesivamente.
+La clase `Encounter` es donde pasa toda la acción. El método `DoEncounter` recibe una lista de enemigos y una lista de héroes y ejecuta la batalla siguiendo esta lógica:
 
-- Luego, los héroes sobrevivientes atacan a los enemigos. Todos los héroes
-  atacan a cada uno de los enemigos 1 vez.
+1. Los enemigos atacan primero. Cada enemigo ataca a un héroe según su posición en la lista. Si hay más enemigos que héroes, se va rotando desde el primero.
+2. Los héroes sobrevivientes atacan a todos los enemigos, uno por uno.
+3. Cuando un héroe mata a un enemigo, se lleva sus VP. Si ese héroe llega a 5 o más VP acumulados, se cura (vuelve a su salud inicial).
+4. El encuentro termina cuando todos los héroes o todos los enemigos están muertos.
 
-- Cada vez que un héroe mata a un enemigo, ese héroe se lleva los VP del enemigo
-  que ha vencido.
+---
 
-- Se repite el primer punto.
+## Decisiones de diseño
 
-El encuentro termina cuando todos los héroes o todos los enemigos han muerto. Si
-un héroe ha conseguido 5+ —5 o más— VP, se cura.
+Algunas cosas que tuvimos que pensar y decidir durante el desarrollo:
 
-### 4.1: Tests
+**Herencia vs. interfaces** — Usamos herencia para compartir comportamiento entre personajes (`Character → Heroes`, `Character → Enemies`) e interfaces para los items (`IOffensiveItem`, `IDefensiveItem`). El `SpellsBook` fue el caso más interesante porque necesitaba ser las dos cosas a la vez, y para eso implementa ambas interfaces.
 
-Identifiquen los tests necesarios para incorporar el concepto de encuentro y
-agreguenlos al proyecto de test. Estos tests deben fallar en este punto.
+**Cálculo de ataque y defensa** — El `GetTotalAttack()` y `GetTotalDefense()` están en `Character` e iteran sobre el equipamiento buscando items que implementen la interfaz correspondiente. Así no hay que sobreescribir esos métodos en cada subclase.
 
-Incorporen los tests a la rama **main** del repositorio, y creen un
-[_Tag_](https://git-scm.com/book/en/v2/Git-Basics-Tagging) en este commit
-llamado `TDD_Start`.
+**El SpellsBook** — Este fue bastante particular. Como los hechizos suman distintos valores, el libro recalcula su ataque y defensa total cuando se le consulta (`GetTotalAttack()` y `GetTotalDefense()` propios), y actualiza sus propiedades `AttackValue` y `DefenseValue`. De esa forma cuando `Character` itera el equipamiento, lee los valores ya actualizados.
 
-### 4.2: El código
+---
 
-Agreguen los encuentros y el código necesario para que funcionen según la lógica
-descrita anteriormente.
+## Cómo ejecutar el proyecto
 
-Al finalizar este paso, los tests del punto anterior (4.1) deben pasar (dan
-verde).
+El `Program.cs` arma un ejemplo básico con un Gigante y un Mago de fuego contra un Goblin y un Zombie. El mago tiene un hechizo de bola de fuego cargado en su libro.
 
-Incorporen el código a la rama **main** del repositorio, y creen un
-[_Tag_](https://git-scm.com/book/en/v2/Git-Basics-Tagging) en este commit
-llamado `TDD_End`.
+La salida muestra cada derrota con el nombre del enemigo y el héroe que lo mató.
 
-*******
+---
 
-## Anexo: Diagrama de clases
+## Integrantes del equipo
 
-A continuación se incluye un diagrama de clases de la solución provista en src/
+- Santiago Abella
+- Rodrigo García
+- Rodrigo Quincke
+- Geronimo Sosa
 
-![Class Diagram](./docs/ClassDiagram.svg)
-
-
-*******
-
-<sup>1</sup> _«La refactorización (del inglés refactoring) es una técnica de la
-ingeniería de software para reestructurar un código fuente, alterando su
-estructura interna sin cambiar su comportamiento externo.»
-[Fuente](https://es.wikipedia.org/wiki/Refactorizaci%C3%B3n)_. Aquí hay también
-una [guía de refactoring](https://refactoring.com/catalog/) muy útil.
+*Programación II — 2026*

@@ -1,18 +1,18 @@
-# ⚔️ Middle Earth Encounters — RPG Combat Simulator
+# ⚔️ Encuentros en la Tierra Media — Simulador de Combate RPG
 
-A turn-based RPG combat simulator built in C# (.NET), where heroes and enemies clash in tactical encounters. Features a full class hierarchy with characters, items, spells, and an encounter engine that drives the battle logic.
-
----
-
-## 🗺️ Overview
-
-The system simulates group battles between **heroes** and **enemies**. Each character has base stats (attack, defense, health) and can be equipped with items that modify those stats. Battles play out round by round until one side is completely wiped out.
+Simulador de combate RPG por turnos desarrollado en C# (.NET), donde héroes y enemigos se enfrentan en encuentros tácticos. Cuenta con una jerarquía de clases completa con personajes, ítems, hechizos y un motor de encuentros que maneja toda la lógica de batalla.
 
 ---
 
-## 🧙 Heroes
+## 🗺️ Descripción general
 
-| Class | Attack | Defense | Health | Equipment |
+El sistema simula batallas grupales entre **héroes** y **enemigos**. Cada personaje tiene estadísticas base (ataque, defensa, salud) y puede equiparse con ítems que modifican esos valores. Las batallas se desarrollan ronda a ronda hasta que un bando queda completamente eliminado.
+
+---
+
+## 🧙 Héroes
+
+| Clase | Ataque | Defensa | Salud | Equipamiento |
 |---|---|---|---|---|
 | `Knight` | 150 | 100 | 300 | Sword, Shield, Armor |
 | `Wizard` | 50 | 80 | 150 | Staff, SpellsBook |
@@ -21,9 +21,9 @@ The system simulates group battles between **heroes** and **enemies**. Each char
 | `Elves` | 50 | 20 | 300 | SpellsBook |
 | `Giant` | 100 | 0 | 500 | — |
 
-## 💀 Enemies
+## 💀 Enemigos
 
-| Class | Attack | Defense | Health | Victory Points |
+| Clase | Ataque | Defensa | Salud | Puntos de Victoria |
 |---|---|---|---|---|
 | `Goblin` | 30 | 10 | 50 | 10 |
 | `Zombie` | 20 | 5 | 80 | 15 |
@@ -32,44 +32,44 @@ The system simulates group battles between **heroes** and **enemies**. Each char
 
 ---
 
-## ⚙️ How Combat Works
+## ⚙️ Cómo funciona el combate
 
-The `Encounter` class drives the battle:
+La clase `Encounter` maneja la batalla:
 
-1. **Enemies attack first** — each enemy targets a hero by rotation (enemy `i` attacks hero `i % N`).
-2. **Surviving heroes counterattack** — each hero attacks every living enemy.
-3. **Victory points** — when a hero kills an enemy, they earn that enemy's VP. Reaching **5+ accumulated VP** triggers a full heal.
-4. **Battle ends** when all heroes or all enemies are dead.
+1. **Los enemigos atacan primero** — cada enemigo apunta a un héroe por rotación (el enemigo `i` ataca al héroe `i % N`).
+2. **Los héroes supervivientes contraatacan** — cada héroe ataca a todos los enemigos vivos.
+3. **Puntos de victoria** — cuando un héroe mata a un enemigo, se lleva sus VP. Acumular **5 o más VP** activa una curación completa.
+4. **La batalla termina** cuando todos los héroes o todos los enemigos están muertos.
 
-Damage is calculated as: `attacker's total attack − defender's total defense`. If defense exceeds attack, no damage is dealt.
-
----
-
-## 🎒 Items
-
-Items are split by function:
-
-- **Offensive** (`IOffensiveItem`): add to attack — `Sword`, `Axe`, `Bow`, `Staff`
-- **Defensive** (`IDefensiveItem`): add to defense — `Shield`, `Armor`, `Helmet`
-- **Mixed** — `SpellsBook` implements both interfaces. Its attack and defense values are computed dynamically from the `Spell` objects loaded into it.
+El daño se calcula como: `ataque total del atacante − defensa total del defensor`. Si la defensa supera al ataque, no se recibe daño.
 
 ---
 
-## 🏗️ Architecture
+## 🎒 Ítems
 
-The design is built around a clean inheritance and interface hierarchy:
+Los ítems se dividen según su función:
+
+- **Ofensivos** (`IOffensiveItem`): suman ataque — `Sword`, `Axe`, `Bow`, `Staff`
+- **Defensivos** (`IDefensiveItem`): suman defensa — `Shield`, `Armor`, `Helmet`
+- **Mixtos** — `SpellsBook` implementa ambas interfaces. Sus valores de ataque y defensa se calculan dinámicamente a partir de los objetos `Spell` que tenga cargados.
+
+---
+
+## 🏗️ Arquitectura
+
+El diseño se apoya en una jerarquía limpia de herencia e interfaces:
 
 ```
 ICharacter
-    └── Character (abstract)
-            ├── Heroes (abstract)
+    └── Character (abstracta)
+            ├── Heroes (abstracta)
             │       ├── Knight
             │       ├── Wizard
             │       ├── Archer
             │       ├── Dwarves
             │       ├── Elves
             │       └── Giant
-            └── Enemies (abstract)
+            └── Enemies (abstracta)
                     ├── Goblin
                     ├── Zombie
                     ├── Skeleton
@@ -80,36 +80,33 @@ IItem
     └── IDefensiveItem  →  Shield, Armor, Helmet, SpellsBook
 ```
 
-`GetTotalAttack()` and `GetTotalDefense()` live in `Character` and iterate over the equipment list — no need to override per subclass. `SpellsBook` is the interesting edge case: it recalculates its own attack/defense values from its spells each time those methods are called.
+`GetTotalAttack()` y `GetTotalDefense()` viven en `Character` e iteran sobre la lista de equipamiento — sin necesidad de sobreescribirlos en cada subclase. `SpellsBook` es el caso más interesante: recalcula sus propios valores de ataque y defensa a partir de sus hechizos cada vez que se los consulta.
 
 ---
 
-## 🚀 Running the Project
+## 🚀 Ejecutar el proyecto
 
-```bash
-dotnet run
-```
 
-`Program.cs` sets up a sample encounter: a **Giant** and a **fire Wizard** (with a Fireball spell loaded) vs. a **Goblin** and a **Zombie**. Output logs each defeat as it happens.
+`Program.cs` arma un encuentro de ejemplo: un **Gigante** y un **Mago de fuego** (con un hechizo de Bola de Fuego cargado) contra un **Goblin** y un **Zombie**. La salida registra cada derrota a medida que ocurre.
 
 ---
 
-## 📐 UML Class Diagram
+## 📐 Diagrama UML
 
-![UML Diagram](UML_Clases.png)
+![Diagrama UML](UML_Clases.png)
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tecnologías
 
 - **C# / .NET**
-- OOP: abstract classes, interfaces, inheritance, polymorphism
+- POO: clases abstractas, interfaces, herencia, polimorfismo
 
 ---
 
-## 👥 Authors
+## 👥 Autores
 
 - Santiago Abella
-- Rodrigo García  
+- Rodrigo García
 - Rodrigo Quincke
 - Gerónimo Sosa

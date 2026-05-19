@@ -91,11 +91,6 @@ IItem
 
 ---
 
-## 📐 Diagrama UML
-
-![Diagrama UML](UML_Clases.png)
-
----
 
 ## 🛠️ Tecnologías
 
